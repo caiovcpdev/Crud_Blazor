@@ -1,4 +1,4 @@
-﻿@page "/categories"
+﻿@page "/books"
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using Crud_Blazor.Models
@@ -8,20 +8,20 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Categories</h1>
+<h1>Books</h1>
 
 <p>
-    <a href="categories/create">Create New</a>
+    <a href="books/create">Create New</a>
 </p>
 
-<QuickGrid Class="table" Items="context.Categories">
-    <PropertyColumn Property="category => category.Title" />
-    <PropertyColumn Property="category => category.Description" />
+<QuickGrid Class="table" Items="context.Books">
+    <PropertyColumn Property="book => book.Name" />
+    <PropertyColumn Property="book => book.Description" />
 
-    <TemplateColumn Context="category">
-        <a href="@($"categories/edit?id={category.id}")">Edit</a> |
-        <a href="@($"categories/details?id={category.id}")">Details</a> |
-        <a href="@($"categories/delete?id={category.id}")">Delete</a>
+    <TemplateColumn Context="book">
+        <a href="@($"books/edit?id={book.Id}")">Edit</a> |
+        <a href="@($"books/details?id={book.Id}")">Details</a> |
+        <a href="@($"books/delete?id={book.Id}")">Delete</a>
     </TemplateColumn>
 </QuickGrid>
 

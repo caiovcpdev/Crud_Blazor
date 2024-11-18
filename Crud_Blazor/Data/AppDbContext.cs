@@ -10,5 +10,6 @@ namespace Crud_Blazor.Data
 
         }
         public DbSet<Category> Categories { get; set; } = null;
+        public DbSet<Book> Books { get; set; } = null;
     }
 }

@@ -1,0 +1,94 @@
+﻿@page "/books/edit"
+@using Microsoft.EntityFrameworkCore
+@using Crud_Blazor.Models
+@inject IDbContextFactory<Crud_Blazor.Data.AppDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Book</h2>
+<hr />
+@if (Book is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Book" OnValidSubmit="UpdateBook" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Book.Id" value="@Book.Id" />
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name:</label>
+                    <InputText id="name" @bind-Value="Book.Name" class="form-control" />
+                    <ValidationMessage For="() => Book.Name" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description:</label>
+                    <InputText id="description" @bind-Value="Book.Description" class="form-control" />
+                    <ValidationMessage For="() => Book.Description" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/books">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Book? Book { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Book ??= await context.Books.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Book is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateBook()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Book!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!BookExists(Book!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/books");
+    }
+
+    private bool BookExists(int id)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Books.Any(e => e.Id == id);
+    }
+}
